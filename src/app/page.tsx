@@ -1,103 +1,105 @@
-import Image from "next/image";
+"use client";
+
+import { AssetBalancePie } from "@/components/charts/asset-balance-pie";
+import { AssetFlowBar } from "@/components/charts/asset-flow-bar";
+import CashChart from "@/components/charts/cash-chart";
+import { RevenueBar } from "@/components/charts/revenue-bar";
+import RevenuePie from "@/components/charts/revenue-pie";
+import { FadeIn } from "@/components/fade-in";
+import NetworkPicker from "@/components/network-picker";
+import NumberCard from "@/components/number-card";
+import TimePicker from "@/components/time-picker";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [scrolled, setScrolled] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <div className="font-sans min-h-screen w-full bg-white">
+      <div className="sticky top-0 bg-white z-50">
+        <div
+          className={`${
+            scrolled ? "py-4" : "py-4 md:py-10"
+          } px-4 md:px-8 xl:px-20 flex justify-between items-center duration-300`}
+        >
+          <h1 className="text-xl md:text-2xl cursor-pointer">Dashboard</h1>
+          <div className="w-36 lg:w-52 xl:w-96">
+            <Input
+              className="hover:border-gray-900 duration-300 transition-all"
+              type="text"
+              placeholder="Ask AI ✦"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <hr />
+      </div>
+      <div className="flex flex-col px-4 md:px-8 xl:px-20 py-10 gap-4">
+        <div className="md:flex justify-between">
+          <NetworkPicker />
+          <div className="md:flex gap-x-4 mt-2 md:mt-0 space-y-2 md:space-y-0">
+            <TimePicker />
+            <TimePicker />
+          </div>
+        </div>
+        <div className="md:flex gap-4 space-y-4 md:space-y-0">
+          <NumberCard
+            title="Tax burden estimate"
+            value="$45,678.90"
+            info="+20% month over month"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <NumberCard
+            title="Value of all coins"
+            value="$1,265mm"
+            info="+33% month over month"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <NumberCard
+            title="Solana holdings"
+            value="10,353"
+            info="-8% month over month"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+        <div className="md:flex gap-x-4 space-y-4 md:space-y-0">
+          <CashChart />
+          <CashChart />
+        </div>
+        <FadeIn>
+          <Card className="pb-20">
+            <CardHeader>
+              <CardTitle>Revenue Deep Dive</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <div className="flex items-start w-full">
+                <div className="flex w-full h-full">
+                  <RevenuePie />
+                  <RevenuePie />
+                </div>
+                <div className="w-full">
+                  <RevenueBar />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+        <div className="md:flex gap-x-4 space-y-4 md:space-y-0">
+          <FadeIn className="w-full object-fill">
+            <AssetBalancePie />
+          </FadeIn>
+          <FadeIn className="w-full">
+            <AssetFlowBar />
+          </FadeIn>
+        </div>
+      </div>
     </div>
   );
 }
