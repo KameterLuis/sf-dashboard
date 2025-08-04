@@ -1,3 +1,5 @@
+"use client";
+
 import { FadeIn } from "./fade-in";
 import {
   Card,

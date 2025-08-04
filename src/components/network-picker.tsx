@@ -8,13 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { Network, useNetworkStore } from "@/lib/network-store";
 import { FadeIn } from "./fade-in";
 
-type networkTypes = "Solana" | "Eth" | "Lido" | "Aptos" | "Celestia";
-
 const NetworkPicker = () => {
-  const [network, setNetwork] = useState<networkTypes>("Solana");
+  const network = useNetworkStore((s) => s.network);
+  const setNetwork = useNetworkStore((s) => s.setNetwork);
 
   return (
     <FadeIn>
@@ -27,15 +26,18 @@ const NetworkPicker = () => {
           <DropdownMenuSeparator />
           <DropdownMenuRadioGroup
             value={network}
-            onValueChange={(e) => setNetwork(e as networkTypes)}
+            onValueChange={(e) => setNetwork(e.toLowerCase() as Network)}
           >
             <DropdownMenuRadioItem value="Solana">Solana</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="Eth">Eth</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="Ethereum">
+              Ethereum
+            </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="Lido">Lido</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="Aptos">Aptos</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="Celestia">
               Celestia
             </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="Sui">Sui</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>

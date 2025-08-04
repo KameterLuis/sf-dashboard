@@ -1,5 +1,7 @@
 "use client";
 
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+
 import {
   Card,
   CardContent,
@@ -13,9 +15,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { formatMoney } from "@/lib/string-formatter";
 import { FadeIn } from "../fade-in";
-export const description = "A line chart";
+
+export const description = "A bar chart with negative values";
 
 const chartData = [
   { month: "January", desktop: 186 },
@@ -25,66 +28,65 @@ const chartData = [
   { month: "May", desktop: 209 },
   { month: "June", desktop: 214 },
 ];
+
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
+  visitors: {
+    label: "Visitors",
   },
 } satisfies ChartConfig;
 
-const CashChart = () => {
+export type chartTypes = {
+  xkey: string;
+  ykey: string;
+  title: string;
+  values: any;
+};
+
+export function DashBarChart({ xkey, ykey, title, values }: chartTypes) {
   return (
     <FadeIn className="w-full">
       <Card>
         <CardHeader>
-          <CardTitle>Cash</CardTitle>
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig}>
-            <LineChart
+            <BarChart
               accessibilityLayer
-              data={chartData}
+              data={values}
               margin={{
-                left: 12,
-                right: 12,
+                top: 20,
               }}
             >
               <CartesianGrid vertical={false} />
               <XAxis
-                dataKey="month"
+                dataKey={xkey}
                 tickLine={false}
+                tickMargin={10}
                 axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                width={32}
               />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Line
-                dataKey="desktop"
-                type="natural"
-                stroke="var(--color-blue-2)"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
+              <Bar dataKey={ykey} fill="var(--color-blue-2)" radius={8}>
+                <LabelList
+                  position="top"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={12}
+                  formatter={(value: number) => formatMoney(value)}
+                />
+              </Bar>
+            </BarChart>
           </ChartContainer>
         </CardContent>
         <CardFooter className="flex-col items-start gap-2 text-sm">
           <div className="text-muted-foreground leading-none">
-            +11% month over month
+            Showing total visitors for the last 6 months
           </div>
         </CardFooter>
       </Card>
     </FadeIn>
   );
-};
-
-export default CashChart;
+}

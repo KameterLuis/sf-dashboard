@@ -37,42 +37,43 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function RevenueBar() {
+type chartTypes = {
+  xkey: string;
+  ykeys: string[];
+  title: string;
+  values: any;
+};
+
+export function DashStackedBar({ xkey, ykeys, title, values }: chartTypes) {
   return (
     <div>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={values}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="bucket"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
-            <Bar
-              dataKey="desktop"
-              stackId="a"
-              fill="var(--color-desktop)"
-              radius={[0, 0, 4, 4]}
-            />
-            <Bar
-              dataKey="mobile"
-              stackId="a"
-              fill="var(--color-mobile)"
-              radius={[4, 4, 0, 0]}
-            />
+            {ykeys.map((key, index) => {
+              console.log(index);
+              return (
+                <Bar
+                  dataKey={key}
+                  stackId="a"
+                  fill={`var(--color-blue-${index + 1})`}
+                  radius={[0, 0, 4, 4]}
+                />
+              );
+            })}
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
+      <CardFooter className="flex-col items-start gap-2 text-sm"></CardFooter>
     </div>
   );
 }

@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Network {
+  solana
+  ethereum
+  lido
+  sui
+  aptos
+  celestia
+  offchain
+}
+
+enum RevenueSource {
+  VALIDATOR_COMMISSION
+  BLOCK_REWARDS
+  MEV
+  PRIORITY_FEES
+  RESTAKE_REWARDS
+  DELEGATION_FEES
+  OTHER_OPERATING_INCOME
+}
+
+enum CostCategory {
+  COGS
+  PERSONNEL
+  OPEX_OTHER
+}
+
+enum CashDirection {
+  IN
+  OUT
+}
+
+// All revenue streams incl. "other operating income" (use network = offchain if needed)
+model Revenue {
+  id        Int           @id @default(autoincrement())
+  at        DateTime      @db.Timestamptz(6)
+  network   Network?
+  source    RevenueSource
+  asset     String? // e.g., SOL, ETH; optional if offchain
+  amount    Decimal?      @db.Decimal(38, 18) // native units (e.g., SOL)
+  valueEur  Decimal       @db.Decimal(38, 8) // EUR value at 'at'
+  createdAt DateTime      @default(now())
+
+  @@index([at])
+  @@index([network, at])
+  @@index([source, at])
+}
+
+// Holdings snapshot per asset/network (point-in-time portfolio)
+model HoldingSnapshot {
+  id        Int      @id @default(autoincrement())
+  at        DateTime @db.Timestamptz(6)
+  network   Network?
+  asset     String
+  amount    Decimal  @db.Decimal(38, 18)
+  priceEur  Decimal  @db.Decimal(38, 8) // price per unit at 'at'
+  valueEur  Decimal  @db.Decimal(38, 8) // amount * priceEur
+  createdAt DateTime @default(now())
+
+  @@unique([at, network, asset]) // one snapshot per asset per time
+  @@index([network, at])
+  @@index([at])
+}
+
+// Bank cash balance snapshot (end-of-day or intraday)
+model CashSnapshot {
+  id        Int      @id @default(autoincrement())
+  at        DateTime @db.Timestamptz(6)
+  totalEur  Decimal  @db.Decimal(38, 2)
+  createdAt DateTime @default(now())
+
+  @@unique([at])
+  @@index([at])
+}
+
+// Individual cash movements for cashflow charts
+model CashMovement {
+  id        Int           @id @default(autoincrement())
+  at        DateTime      @db.Timestamptz(6)
+  direction CashDirection
+  amountEur Decimal       @db.Decimal(38, 2)
+  memo      String?
+  createdAt DateTime      @default(now())
+
+  @@index([at])
+  @@index([direction, at])
+}
+
+// Operating costs
+model Cost {
+  id        Int          @id @default(autoincrement())
+  at        DateTime     @db.Timestamptz(6)
+  category  CostCategory
+  amountEur Decimal      @db.Decimal(38, 2)
+  memo      String?
+  createdAt DateTime     @default(now())
+
+  @@index([at])
+  @@index([category, at])
+}

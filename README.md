@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Updating Database Structure
+
+1. Update schema.prisma
+2. Run npx prisma generate
+3. npx prisma reset
+4. Run npx prisma migrate dev --name some_name
+5. npx prisma db seed
+
 ## Getting Started
 
 First, run the development server:

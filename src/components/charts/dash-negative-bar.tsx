@@ -2,13 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, LabelList } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -33,13 +27,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function AssetFlowBar() {
+export function DashNegativeBar() {
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>Asset In- / Outflow</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-full flex items-center">
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
@@ -63,11 +57,6 @@ export function AssetFlowBar() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   );
 }
