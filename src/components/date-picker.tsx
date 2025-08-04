@@ -61,7 +61,7 @@ export default function DateRangePicker() {
           />
           <Button
             variant="ghost"
-            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+            className="absolute top-1/2 right-2 size-6 -translate-y-1/2 cursor-pointer"
           >
             <CalendarIcon className="size-3.5" />
             <span className="sr-only">Select dates</span>

@@ -19,7 +19,9 @@ const NetworkPicker = () => {
     <FadeIn>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">{network}</Button>
+          <Button className="cursor-pointer" variant="outline">
+            {network}
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 ml-10">
           <DropdownMenuLabel>Network</DropdownMenuLabel>

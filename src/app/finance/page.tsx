@@ -19,6 +19,7 @@ import DatePicker from "@/components/date-picker";
 import { FadeIn } from "@/components/fade-in";
 import NetworkPicker from "@/components/network-picker";
 import NumberCard from "@/components/number-card";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useDateRangeStore } from "@/lib/date-range-store";
@@ -26,11 +27,6 @@ import { useNetworkStore } from "@/lib/network-store";
 import { formatMoney, formatNumber } from "@/lib/string-formatter";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-type cashChartType = {
-  date: string;
-  cash: number;
-};
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -194,6 +190,11 @@ export default function Home() {
           <FadeIn className="w-full object-fill min-h-full">
             <DashNegativeBar />
           </FadeIn>
+        </div>
+        <div>
+          <Button className="cursor-pointer" variant="outline">
+            <Link href="/upload">Upload</Link>
+          </Button>
         </div>
       </div>
     </div>
