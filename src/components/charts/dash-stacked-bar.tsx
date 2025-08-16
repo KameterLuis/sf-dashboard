@@ -60,7 +60,6 @@ export function DashStackedBar({ xkey, ykeys, title, values }: chartTypes) {
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
             {ykeys.map((key, index) => {
-              console.log(index);
               return (
                 <Bar
                   dataKey={key}

@@ -10,19 +10,34 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 
-export default function Upload() {
+export default function UploadDATEV() {
   const [file, setFile] = useState<any>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
   const handleFileChange = (e: any) => {
     setFile(e.target.files[0]);
   };
-  const handleSubmit = (e: any) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Uploading file:", file);
+    if (!file) return;
+
+    const body = new FormData();
+    body.append("file", file);
+
+    const res = await fetch("/api/upload-datev", { method: "POST", body });
+    const json = await res.json();
+
+    setMsg(json.message);
+
+    setFile(null);
   };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Upload a File</CardTitle>
+        <CardTitle>Upload a DATEV file</CardTitle>
         <CardDescription>
           Select a file to upload and click the submit button.
         </CardDescription>
@@ -31,7 +46,7 @@ export default function Upload() {
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="flex items-center justify-center w-full">
             <label
-              htmlFor="dropzone-file"
+              htmlFor="dropzone-datev-file"
               className="flex cursor-pointer flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -40,15 +55,14 @@ export default function Upload() {
                   <span className="font-semibold">Click to upload</span> or drag
                   and drop
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  SVG, PNG, JPG or GIF (MAX. 800x400px)
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">XLS</p>
               </div>
               <input
-                id="dropzone-file"
+                id="dropzone-datev-file"
                 type="file"
                 className="hidden"
                 onChange={handleFileChange}
+                accept=".xls,.XLS"
               />
             </label>
           </div>
@@ -61,6 +75,13 @@ export default function Upload() {
                 </p>
               </div>
               <Button type="submit">Upload</Button>
+            </div>
+          )}
+          {msg && (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">{msg}</p>
+              </div>
             </div>
           )}
         </form>

@@ -1,7 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import Upload from "@/components/ui/upload";
+import UploadDATEV from "@/components/ui/upload-datev";
+import UploadKontoauszug from "@/components/ui/upload-kontoauszug";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -43,8 +44,13 @@ export default function Home() {
         </div>
         <hr />
       </div>
-      <div className="flex flex-col px-4 md:px-8 xl:px-20 py-10 gap-4">
-        <Upload />
+      <div className="flex px-4 md:px-8 xl:px-20 py-10 gap-4">
+        <div className="w-full">
+          <UploadDATEV />
+        </div>
+        <div className="w-full">
+          <UploadKontoauszug />
+        </div>
       </div>
     </div>
   );
