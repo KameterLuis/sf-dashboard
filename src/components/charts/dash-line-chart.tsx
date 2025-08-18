@@ -55,6 +55,12 @@ const DashLineChart = ({ xkey, ykey, title, values }: chartTypes) => {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
+                tickFormatter={(ms) =>
+                  new Intl.DateTimeFormat("de-DE", {
+                    day: "2-digit",
+                    month: "short",
+                  }).format(new Date(ms))
+                }
               />
               <YAxis
                 tickLine={false}

@@ -2,10 +2,10 @@
 CREATE TYPE "public"."FiatType" AS ENUM ('DOLLAR', 'EURO');
 
 -- CreateEnum
-CREATE TYPE "public"."Network" AS ENUM ('solana', 'ethereum', 'chainlink', 'celestia', 'lido', 'aptos');
+CREATE TYPE "public"."Network" AS ENUM ('solana', 'ethereum', 'chainlink', 'celestia', 'lido', 'aptos', 'sui');
 
 -- CreateEnum
-CREATE TYPE "public"."Ticker" AS ENUM ('SOL', 'ETH', 'LINK', 'TIA', 'APT', 'LIDO');
+CREATE TYPE "public"."Ticker" AS ENUM ('SOL', 'ETH', 'LINK', 'TIA', 'APT', 'LIDO', 'SUI');
 
 -- CreateEnum
 CREATE TYPE "public"."DatevTransactionType" AS ENUM ('REVENUE', 'COGS', 'OTHER_OPERATING_INCOME', 'OTHER');
@@ -70,10 +70,9 @@ CREATE TABLE "public"."TresTransaction" (
     "timestamp" TIMESTAMP(3) NOT NULL,
     "tokenAmount" DECIMAL(65,30) NOT NULL,
     "fiatAmount" DECIMAL(65,30) NOT NULL,
-    "tokenName" TEXT NOT NULL,
+    "network" "public"."Network" NOT NULL,
     "ticker" "public"."Ticker" NOT NULL,
     "type" "public"."TresTransactionType" NOT NULL,
-    "network" "public"."Network" NOT NULL,
 
     CONSTRAINT "TresTransaction_pkey" PRIMARY KEY ("id")
 );
@@ -84,7 +83,6 @@ CREATE TABLE "public"."TresBalance" (
     "timestamp" TIMESTAMP(3) NOT NULL,
     "tokenBalance" DECIMAL(65,30) NOT NULL,
     "fiatBalance" DECIMAL(65,30) NOT NULL,
-    "tokenName" TEXT NOT NULL,
     "ticker" "public"."Ticker" NOT NULL,
     "network" "public"."Network" NOT NULL,
 

@@ -8,7 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Network, useNetworkStore } from "@/lib/network-store";
+import { useNetworkStore } from "@/lib/network-store";
+import { Network } from "@prisma/client";
 import { FadeIn } from "./fade-in";
 
 const NetworkPicker = () => {
@@ -40,6 +41,9 @@ const NetworkPicker = () => {
               Celestia
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="Sui">Sui</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="Chainlink">
+              Chainlink
+            </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>

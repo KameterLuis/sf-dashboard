@@ -1,13 +1,12 @@
 "use client";
 
 import {
-  getCashSnapshots,
+  getCashChartValues,
   getNetworkHoldings,
+  getPortfolioValue,
   getRevenueByNetwork,
-  getRevenueBySourceBuckets,
+  getRevenueByType,
   getTaxEstimate,
-  getTotalPortfolioValue,
-  TimeFilter,
 } from "@/app/db/finance/data-provider";
 import { AssetBalancePie } from "@/components/charts/asset-balance-pie";
 import { DashBarChart } from "@/components/charts/dash-bar-chart";
@@ -46,31 +45,23 @@ export default function Home() {
   const updateData = async () => {
     if (!dateRange?.to) return;
 
-    const filter: TimeFilter = {
-      network,
-      from: dateRange?.from,
-      to: dateRange?.to,
-    };
-
-    const taxEstimateData = await getTaxEstimate(filter);
+    const taxEstimateData = await getTaxEstimate(dateRange);
     setTaxEstimate(taxEstimateData);
 
-    const portfolioValueData = await getTotalPortfolioValue(dateRange?.to);
+    const portfolioValueData = await getPortfolioValue(dateRange);
     setPortfolioValue(portfolioValueData);
 
-    const networkHoldingsData = await getNetworkHoldings(
-      dateRange?.to,
-      network
-    );
+    const networkHoldingsData = await getNetworkHoldings(dateRange, network);
     setNetworkHoldings(networkHoldingsData);
 
-    const cashChartValuesData = await getCashSnapshots(filter);
+    const cashChartValuesData = await getCashChartValues(dateRange);
     setCashChartValues(cashChartValuesData);
+    console.log(cashChartValuesData);
 
-    const revenueByNetworkData = await getRevenueByNetwork(filter);
+    const revenueByNetworkData = await getRevenueByNetwork(dateRange);
     setRevenueByNetwork(revenueByNetworkData);
 
-    const revenueByTypeData = await getRevenueBySourceBuckets(filter, 9);
+    const revenueByTypeData = await getRevenueByType(dateRange);
     setRevenueByType(revenueByTypeData);
   };
 

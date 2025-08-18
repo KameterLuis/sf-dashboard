@@ -1,6 +1,5 @@
+import { Network } from "@prisma/client";
 import { create } from "zustand";
-
-export type Network = "solana" | "ethereum" | "lido" | "aptos" | "celestia" | "sui"
 
 type State = {
   network: Network | "solana";

@@ -8,6 +8,30 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 4. Run npx prisma migrate dev --name some_name
 5. npx prisma db seed
 
+## Reset
+
+docker compose down -v --remove-orphans
+docker compose build --no-cache
+docker compose up
+
+mkdir -p prisma/migrations/20250818_add_users
+npx prisma migrate diff \
+ --from-migrations prisma/migrations \
+ --to-schema-datamodel prisma/schema.prisma \
+ --script > prisma/migrations/20250818_add_users/migration.sql
+
+## Running locally
+
+change .env to DATABASE_URL=postgresql://app:secret@localhost:5432/mydb
+run docker compose up -d db
+run these:
+
+- npm install
+- npx prisma generate
+- npx prisma migrate dev --name init
+- npx prisma db seed
+- npm run dev
+
 ## Getting Started
 
 First, run the development server:

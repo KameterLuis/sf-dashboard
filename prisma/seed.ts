@@ -1,140 +1,169 @@
-import { faker } from '@faker-js/faker';
-import { CashDirection, CostCategory, Network, Prisma, PrismaClient, RevenueSource } from '@prisma/client';
-import { addDays, subDays } from 'date-fns';
+import { DatevTransactionType, FiatType, Network, PrismaClient, Ticker, TresTransactionType } from '@prisma/client';
 
-const prisma = new PrismaClient({ log: ['error'] });
+const prisma = new PrismaClient();
 
-/** --- helpers ----------------------------------------------------------- */
-
-const NETWORKS = [
-  Network.solana,
-  Network.ethereum,
-  Network.lido,
-  Network.sui,
-  Network.aptos,
-  Network.celestia,
-] as const;
-
-const ASSET_BY_NETWORK: Record<Network, string> = {
-  solana:   'SOL',
-  ethereum: 'ETH',
-  lido:     'LDO',
-  sui:      'SUI',
-  aptos:    'APT',
-  celestia: 'TIA',
-  offchain: 'EUR', // not used here
-};
-
-const DAYS_BACK = 90;
-const today = new Date();
-const day0  = subDays(today, DAYS_BACK - 1); // oldest day included
-
-function randomDateWithinLastDays(days: number) {
-  return faker.date.between({ from: subDays(today, days), to: today });
+function addDays(date: Date, days: number): Date {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
 }
-
-function twoDec(min: number, max: number) {
-  return Number(faker.finance.amount({ min, max }));
-}
-
-/** --- seeding ----------------------------------------------------------- */
-
-async function seedRevenue() {
-  const data = Array.from({ length: 1_000 }).map(() => {
-    const network = faker.helpers.arrayElement(NETWORKS);
-    const price   = twoDec(5, 250);                // fake asset price in EUR
-    const amount  = Number(faker.finance.amount({ min: 0.1, max: 50 }));
-    return {
-      at:       randomDateWithinLastDays(DAYS_BACK),
-      network,
-      source:   faker.helpers.enumValue(RevenueSource),
-      asset:    ASSET_BY_NETWORK[network],
-      amount,
-      valueEur: twoDec(amount * price * 0.95, amount * price * 1.05), // ±5 %
-    };
-  });
-
-  await prisma.revenue.createMany({ data, skipDuplicates: true });
-  console.log('✓ revenue');
-}
-
-async function seedHoldingSnapshots() {
-  const snapshots: Prisma.HoldingSnapshotCreateManyInput[] = [];
-
-  for (let i = 0; i < DAYS_BACK; i++) {
-    const at = addDays(day0, i);
-    for (const network of NETWORKS) {
-      const balance = Number(faker.finance.amount({ min: 100, max: 10_000 }));
-      const price   = twoDec(5, 250);
-      snapshots.push({
-        at,
-        network,
-        asset:     ASSET_BY_NETWORK[network],
-        amount:    balance,
-        priceEur:  price,
-        valueEur:  Number((balance * price).toFixed(2)), // exact product
-      });
-    }
-  }
-  await prisma.holdingSnapshot.createMany({ data: snapshots, skipDuplicates: true });
-  console.log('✓ holdings');
-}
-
-async function seedCashSnapshotsAndMovements() {
-  const cashSnaps = [];
-  const cashMoves = [];
-
-  let runningBalance = 50_000; // EUR
-
-  for (let i = 0; i < DAYS_BACK; i++) {
-    const at = addDays(day0, i);
-
-    // 3–5 random cash movements for that day
-    const movementsToday = faker.number.int({ min: 3, max: 5 });
-    for (let m = 0; m < movementsToday; m++) {
-      const direction = faker.helpers.enumValue(CashDirection);
-      const amount    = twoDec(500, 10_000);
-      runningBalance += direction === 'IN' ? amount : -amount;
-
-      cashMoves.push({
-        at: faker.date.between({ from: at, to: addDays(at, 1) }),
-        direction,
-        amountEur: amount,
-        memo: direction === 'IN' ? 'Client payment' : 'Provider bill',
-      });
-    }
-
-    cashSnaps.push({
-      at,
-      totalEur: Number(runningBalance.toFixed(2)),
-    });
-  }
-
-  await prisma.cashSnapshot.createMany({ data: cashSnaps, skipDuplicates: true });
-  await prisma.cashMovement.createMany({ data: cashMoves, skipDuplicates: true });
-  console.log('✓ cash snapshots & movements');
-}
-
-async function seedCosts() {
-  const data = Array.from({ length: 300 }).map(() => ({
-    at:        randomDateWithinLastDays(DAYS_BACK),
-    category:  faker.helpers.enumValue(CostCategory),
-    amountEur: twoDec(200, 5_000),
-    memo:      faker.company.name(),
-  }));
-  await prisma.cost.createMany({ data, skipDuplicates: true });
-  console.log('✓ costs');
-}
-
-/** --- orchestrate ------------------------------------------------------- */
 
 async function main() {
-  await Promise.all([
-    seedRevenue(),
-    seedHoldingSnapshots(),
-    seedCashSnapshotsAndMovements(),
-    seedCosts(),
-  ]);
+  console.log('🌱 Seeding database with daily data...');
+
+  // --- Clear all tables first ---
+  await prisma.datevTransaction.deleteMany();
+  await prisma.fwBalance.deleteMany();
+  await prisma.fwTransaction.deleteMany();
+  await prisma.accountBalance.deleteMany();
+  await prisma.accountTransaction.deleteMany();
+  await prisma.tresTransaction.deleteMany();
+  await prisma.tresBalance.deleteMany();
+
+  // --- Generate data ---
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 3); // go 3 months back
+
+  const today = new Date();
+  const days = Math.ceil((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+  console.log(`📅 Generating ${days} days of data from ${startDate.toDateString()} to ${today.toDateString()}`);
+
+  let fwBalance = 5000;
+  let accountBalance = 7500;
+  let tresTokenBalance = 5;
+  let tresFiatBalance = 75000;
+
+  for (let i = 0; i <= days; i++) {
+    const day = addDays(startDate, i);
+
+    // --- Datev Transactions (Revenue + COGS daily) ---
+    await prisma.datevTransaction.create({
+      data: {
+        timestamp: day,
+        amount: 1000 + i * 15  * (Math.random() - 0.25), // growing revenue
+        type: DatevTransactionType.REVENUE,
+        fiatType: FiatType.EURO,
+      },
+    });
+    await prisma.datevTransaction.create({
+      data: {
+        timestamp: day,
+        amount: -200 - (i % 5) * 10 * (Math.random() + 0.5), // variable COGS
+        type: DatevTransactionType.COGS,
+        fiatType: FiatType.EURO,
+      },
+    });
+    await prisma.datevTransaction.create({
+      data: {
+        timestamp: day,
+        amount: 1000 + i * 10 * (Math.random() + 0.5), // growing revenue
+        type: DatevTransactionType.OTHER_OPERATING_INCOME,
+        fiatType: FiatType.EURO,
+      },
+    });
+    await prisma.datevTransaction.create({
+      data: {
+        timestamp: day,
+        amount: (i % 50) * Math.random() * 100, // variable COGS
+        type: DatevTransactionType.OTHER,
+        fiatType: FiatType.EURO,
+      },
+    });
+
+    // --- FW Balance + Transaction ---
+    fwBalance += Math.random() * 200 - 50; // slight variation
+    await prisma.fwBalance.create({
+      data: {
+        timestamp: day,
+        amount: fwBalance,
+        fiatType: FiatType.EURO,
+      },
+    });
+    await prisma.fwTransaction.create({
+      data: {
+        timestamp: day,
+        amount: Math.random() * 400 - 100,
+        fiatType: FiatType.EURO,
+      },
+    });
+
+    // --- Account Balance + Transaction ---
+    let accountTransaction = Math.random() * 5000 - 250; 
+    accountBalance += accountTransaction;
+    await prisma.accountBalance.create({
+      data: {
+        timestamp: day,
+        amount: accountBalance,
+        fiatType: FiatType.EURO,
+      },
+    });
+    await prisma.accountTransaction.create({
+      data: {
+        timestamp: day,
+        amount: accountTransaction,
+        fiatType: FiatType.EURO,
+      },
+    });
+
+    const networks: Network[] = ["solana", "ethereum", "chainlink", "celestia", "lido", "aptos", "sui"]
+    const ticker: Ticker[] = ["SOL", "ETH", "LINK", "TIA", "LIDO", "APT", "SUI"];
+
+    for(let j = 0; j < networks.length; j++) {
+
+      const network_i = networks[j];
+      const ticker_i = ticker[j];
+
+      const tokenChange = Math.random() * 0.5 - 0.25;
+      tresTokenBalance += tokenChange;
+      tresFiatBalance += tokenChange * 30000;
+
+      await prisma.tresTransaction.create({
+        data: {
+          timestamp: day,
+          tokenAmount: tokenChange,
+          fiatAmount: tokenChange * 30000,
+          network: Network[network_i],
+          ticker: Ticker[ticker_i],
+          type: TresTransactionType.OPERATIONS,
+        },
+      });
+
+      await prisma.tresTransaction.create({
+        data: {
+          timestamp: day,
+          tokenAmount: tokenChange,
+          fiatAmount: tokenChange * 30000,
+          network: Network[network_i],
+          ticker: Ticker[ticker_i],
+          type: TresTransactionType.FEES,
+        },
+      });
+
+      await prisma.tresTransaction.create({
+        data: {
+          timestamp: day,
+          tokenAmount: tokenChange,
+          fiatAmount: tokenChange * 30000,
+          network: Network[network_i],
+          ticker: Ticker[ticker_i],
+          type: TresTransactionType.OTHER,
+        },
+      });
+
+      await prisma.tresBalance.create({
+        data: {
+          timestamp: day,
+          tokenBalance: tresTokenBalance,
+          fiatBalance: tresFiatBalance,
+          network: Network[network_i],
+          ticker: Ticker[ticker_i],
+        },
+      });
+    }
+  }
+
+  console.log('✅ Seeding complete!');
 }
 
 main()
@@ -142,4 +171,6 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

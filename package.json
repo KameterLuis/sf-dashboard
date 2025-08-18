@@ -43,6 +43,6 @@
     "typescript": "^5"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "node --enable-source-maps prisma/seed.mjs"
   }
 }

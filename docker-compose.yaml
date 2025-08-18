@@ -11,20 +11,38 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-mydb} -h localhost"]
+      interval: 5s
+      retries: 10
   app:
     build: .
     env_file: .env
     environment:
+      CHOKIDAR_USEPOLLING: "true"
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: development
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
       - /app/node_modules
-    command: "npm run dev"
+    command: >
+      sh -c "
+        npm ci &&
+        npx prisma generate &&
+        if [ -z \"$(ls -A prisma/migrations 2>/dev/null)\" ]; then
+          echo 'No migrations found. Creating initial migration...';
+          npx prisma migrate dev --name init;
+        else
+          npx prisma migrate deploy;
+        fi &&
+        npx prisma db seed &&
+        npm run dev
+      "
 
 volumes:
   postgres-data:
