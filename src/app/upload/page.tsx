@@ -1,15 +1,29 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import UploadDATEV from "@/components/ui/upload-datev";
-import UploadKontoauszug from "@/components/ui/upload-kontoauszug";
+import Upload from "@/components/ui/upload";
+import { getWeekNumber } from "@/lib/date-helper";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [selectedWeek, setSelectedWeek] = useState<number>(1);
+
+  const changeKW = (amount: number) => {
+    if (selectedWeek > 1 && amount < 0) {
+      setSelectedWeek(selectedWeek - 1);
+    } else if (selectedWeek < 53 && amount > 0) {
+      setSelectedWeek(selectedWeek + 1);
+    }
+  };
 
   useEffect(() => {
+    const week = getWeekNumber();
+    setSelectedWeek(week);
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 0);
     };
@@ -44,13 +58,68 @@ export default function Home() {
         </div>
         <hr />
       </div>
-      <div className="flex px-4 md:px-8 xl:px-20 py-10 gap-4">
-        <div className="w-full">
-          <UploadDATEV />
+      <div className="px-20 py-10 space-y-4">
+        <div className="w-full justify-end flex space-x-2">
+          <Button
+            onClick={() => changeKW(-1)}
+            variant="outline"
+            className="cursor-pointer"
+          >
+            <ArrowLeft color="#000000" />
+          </Button>
+          <Button variant="outline" className="cursor-pointer">
+            <span className="text-black">KW {selectedWeek}</span>
+          </Button>
+          <Button
+            onClick={() => changeKW(1)}
+            variant="outline"
+            className="cursor-pointer"
+          >
+            <ArrowRight color="#000000" />
+          </Button>
         </div>
-        <div className="w-full">
-          <UploadKontoauszug />
-        </div>
+        <Upload
+          title="DATEV Dateiupload"
+          fileType=".xls,.XLS"
+          fileTypeName="XLS"
+          apiRoute="datev"
+          selectedWeek={selectedWeek}
+        />
+        <Upload
+          title="Bankkonto Dateiupload"
+          fileType=".csv,text/csv,application/vnd.ms-excel,.CSV"
+          fileTypeName="CSV"
+          apiRoute="bank"
+          selectedWeek={selectedWeek}
+        />
+        <Upload
+          title="Fremdwährungskonto Dateiupload"
+          fileType=".csv,text/csv,application/vnd.ms-excel,.CSV"
+          fileTypeName="CSV"
+          apiRoute="foreign"
+          selectedWeek={selectedWeek}
+        />
+        <Upload
+          title="TRES Transaktionen Dateiupload"
+          fileType=".xlsx,.XLSX"
+          fileTypeName="XLSX"
+          apiRoute="tres-transaction"
+          selectedWeek={selectedWeek}
+        />
+        <Upload
+          title="TRES Balance Dateiupload"
+          fileType=".xlsx,.XLSX"
+          fileTypeName="XLSX"
+          apiRoute="tres-balance"
+          selectedWeek={selectedWeek}
+        />
+        <Upload
+          title="Finway Dateiupload"
+          fileType=".csv,text/csv,application/vnd.ms-excel,.CSV"
+          fileTypeName="CSV"
+          apiRoute="finway"
+          selectedWeek={selectedWeek}
+        />
       </div>
     </div>
   );

@@ -1,24 +1,34 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database
+
+Revenue aus TRES
+Bankaccount + Fremdwährungskonto
+Finway mit Startbalance
+TRES Transaction + Balance data
+DATEV
+
 ## Updating Database Structure
 
 1. Update schema.prisma
 2. Run npx prisma generate
-3. npx prisma reset
-4. Run npx prisma migrate dev --name some_name
-5. npx prisma db seed
+3. npx prisma migrate reset --skip-seed
+4. npx prisma reset
+5. Run npx prisma migrate dev --name some_name
+6. npx prisma migrate deploy
+7. npx prisma db seed
 
 ## Reset
 
-docker compose down -v --remove-orphans
-docker compose build --no-cache
-docker compose up
-
-mkdir -p prisma/migrations/20250818_add_users
+mkdir -p prisma/migrations/20250820
 npx prisma migrate diff \
  --from-migrations prisma/migrations \
  --to-schema-datamodel prisma/schema.prisma \
  --script > prisma/migrations/20250818_add_users/migration.sql
+
+docker compose down -v --remove-orphans
+docker compose build --no-cache
+docker compose up
 
 ## Running locally
 

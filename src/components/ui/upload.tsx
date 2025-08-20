@@ -8,11 +8,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
+import { ArrowUpFromLine, Check } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default function UploadDATEV() {
+type UploadType = {
+  title: string;
+  apiRoute: string;
+  fileType: string;
+  fileTypeName: string;
+  selectedWeek: number;
+};
+
+export default function Upload({
+  title,
+  apiRoute,
+  fileType,
+  fileTypeName,
+  selectedWeek,
+}: UploadType) {
   const [file, setFile] = useState<any>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [isMissing, setIsMissing] = useState<boolean>(true);
+  const [cardOpen, setCardOpen] = useState<boolean>(false);
+  const [pleaseWait, setPleaseWait] = useState<boolean>(true);
+
+  const checkMissing = async () => {
+    setPleaseWait(true);
+    const body = JSON.stringify({
+      kw: selectedWeek,
+      type: apiRoute,
+    });
+    const res = await fetch("/api/check/", {
+      method: "POST",
+      body: body,
+    });
+    const json = await res.json();
+    const check = json.missing;
+    setIsMissing(check);
+    setPleaseWait(false);
+  };
+
+  useEffect(() => {
+    checkMissing();
+  }, [selectedWeek]);
 
   const handleFileChange = (e: any) => {
     setFile(e.target.files[0]);
@@ -26,27 +64,55 @@ export default function UploadDATEV() {
     const body = new FormData();
     body.append("file", file);
 
-    const res = await fetch("/api/upload-datev", { method: "POST", body });
+    const res = await fetch("/api/upload/upload-" + apiRoute, {
+      method: "POST",
+      body,
+    });
     const json = await res.json();
 
     setMsg(json.message);
-
     setFile(null);
+
+    checkMissing();
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Upload a DATEV file</CardTitle>
-        <CardDescription>
-          Select a file to upload and click the submit button.
-        </CardDescription>
+    <Card
+      className={`duration-300 ${
+        isMissing
+          ? cardOpen
+            ? "cursor-pointer h-[430px]"
+            : "overflow-hidden h-[90px] cursor-pointer"
+          : "border-[#1dc320] overflow-hidden h-[90px]"
+      }`}
+      onClick={() => setCardOpen(!cardOpen)}
+    >
+      <CardHeader className="flex justify-between h-full items-center">
+        <div>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription className="mt-2">
+            {pleaseWait
+              ? "Überprüfe Datei..."
+              : isMissing
+              ? "Datei fehlt. Bitte hochladen."
+              : "Datei hochgeladen."}
+          </CardDescription>
+        </div>
+        {isMissing ? (
+          <div className="rounded-full border border-gray-500 border-dashed p-3">
+            <ArrowUpFromLine size={20} color="#999999" />
+          </div>
+        ) : (
+          <div className="rounded-full border border-[#1dc320] p-3">
+            <Check size={16} color="#1dc320" />
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="flex items-center justify-center w-full">
             <label
-              htmlFor="dropzone-datev-file"
+              htmlFor={apiRoute}
               className="flex cursor-pointer flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -55,14 +121,16 @@ export default function UploadDATEV() {
                   <span className="font-semibold">Click to upload</span> or drag
                   and drop
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">XLS</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {fileTypeName}
+                </p>
               </div>
               <input
-                id="dropzone-datev-file"
+                id={apiRoute}
                 type="file"
                 className="hidden"
                 onChange={handleFileChange}
-                accept=".xls,.XLS"
+                accept={fileType}
               />
             </label>
           </div>

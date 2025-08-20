@@ -79,6 +79,7 @@ model AccountBalance {
   timestamp DateTime
   amount    Decimal
   fiatType  FiatType
+  hash      String   @unique
 }
 
 model AccountTransaction {
@@ -86,6 +87,7 @@ model AccountTransaction {
   timestamp DateTime
   amount    Decimal
   fiatType  FiatType
+  hash      String   @unique
 }
 
 model TresTransaction {

@@ -16,6 +16,8 @@ import {
 import { compactNumber } from "@/lib/string-formatter";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { FadeIn } from "../fade-in";
+import { useEffect, useState } from "react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 export const description = "A line chart";
 
 const chartConfig = {
@@ -33,6 +35,20 @@ type chartTypes = {
 };
 
 const DashLineChart = ({ xkey, ykey, title, values }: chartTypes) => {
+  const [percentageChangeString, setPercentageChangeString] =
+    useState<string>("");
+  const [percentageChange, setPercentageChange] = useState<number>(0);
+
+  useEffect(() => {
+    if (!values || values.length < 2) return;
+    let first = values[0][ykey];
+    let last = values[values.length - 1][ykey];
+    let difference = Math.round(((last - first) / first) * 10000) / 100;
+    let diffString = `${difference >= 0 ? "+" : ""} ${difference}%`;
+    setPercentageChange(difference);
+    setPercentageChangeString(diffString);
+  }, [values]);
+
   return (
     <FadeIn className="w-full">
       <Card>
@@ -84,8 +100,15 @@ const DashLineChart = ({ xkey, ykey, title, values }: chartTypes) => {
           </ChartContainer>
         </CardContent>
         <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="text-muted-foreground leading-none">
-            +11% month over month
+          <div className="text-center flex w-full justify-center">
+            <div className="text-muted-foreground leading-none flex space-x-2">
+              <p>{percentageChangeString}</p>
+              {percentageChange >= 0 ? (
+                <TrendingUp size={16} color="#737373" />
+              ) : (
+                <TrendingDown size={16} color="#737373" />
+              )}
+            </div>
           </div>
         </CardFooter>
       </Card>
