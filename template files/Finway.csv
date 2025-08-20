@@ -1,0 +1,81 @@
+TransactionDate;Vendor;CreditorNumber;ExpenseAccountNr;ExpenseNumber;Description;InvoiceNumber;Credit;CreditCurrency;Debit;DebitCurrency
+02-06-2025;TradingHours;7000351;590002;4534;Transaction on card **** 5893;EC44BA33-0051;;;-535.28;EUR
+02-06-2025;Quiknode Inc;7000195;590002;4542;Transaction on card **** 0511;1B5F117B-0012;;;-175.92;EUR
+02-06-2025;Quiknode Inc;7000195;590002;4543;Transaction on card **** 0511;616158E5-0122;;;-264.32;EUR
+02-06-2025;Digital Ocean;7001000;590002;4544;Transaction on card **** 6060;515765472;;;-50.92;EUR
+02-06-2025;Digital Ocean;7001000;590002;4545;Transaction on card **** 6060;516107178;;;-78.77;EUR
+02-06-2025;Slack;7000176;683700;4541;Transaction on card **** 6060;SBIE-8738047;;;-75.73;EUR
+02-06-2025;Google;7000108;683700;4546;Transaction on card **** 1865;5268195707;;;-968.84;EUR
+02-06-2025;Coinmarketcap;7000111;590002;4547;Transaction on card **** 6060;56F5E64F-0058;;;-773.51;EUR
+03-06-2025;Bitfly;7000314;590002;4556;Transaction on card **** 9360;INV-9151;;;-99;EUR
+04-06-2025;Cherry Servers Uab;7000098;590001;4031;Transaction on card **** 1865;06/2025/00350;;;-453.25;EUR
+04-06-2025;Jumpcloud Inc.;7000140;683700;4557;Transaction on card **** 1865;290149;;;-100.53;EUR
+05-06-2025;Ledger;7000021;684500;4560;Transaction on card **** 5893;00000000000006928396;;;-395;EUR
+05-06-2025;Agip Service Station;7000413;653000;4561;Transaction on card **** 2138;6173/002/00002;;;-62.13;EUR
+05-06-2025;Shell;7000304;653000;4564;Transaction on card **** 4163;1435299;;;-72.24;EUR
+05-06-2025;Gitlab;7000397;683700;4565;Transaction on card **** 1865;INV00441439;;;-7293.41;EUR
+06-06-2025;Adobe;7000265;683700;4575;Transaction on card **** 6466;IEE2025007084075;;;-55.84;EUR
+06-06-2025;DB Vertrieb GmbH;;;4573;Transaction on card **** 6280;;;;-160.48;EUR
+06-06-2025;BEACONCHA.IN;;;4576;Transaction on card **** 9360;;;;-372.47;EUR
+09-06-2025;Cherry Servers Uab;7000098;590001;4581;Transaction on card **** 1865;06/2025/00655;;;-413.25;EUR
+09-06-2025;Emirates;7000433;666300;4578;Transaction on card **** 1323;176 2389629557;;;-807.17;EUR
+09-06-2025;Emirates;7000433;;4577;Transaction on card **** 3169;;;;-807.17;EUR
+09-06-2025;Crypto Compare CC Data Limited;7002800;590002;4582;Transaction on card **** 6060;70B36249-0056;;;-879.58;EUR
+10-06-2025;BKG*HOTEL AT BOOKING.C;;;4583;Transaction on card **** 6280;;;;-333.9;EUR
+12-06-2025;UBER   *TRIP;;;4587;Transaction on card **** 6280;;;;-9.9;EUR
+12-06-2025;Taqueria Mama Rosas;;;4592;Transaction on card **** 6280;;;;-180.4;EUR
+12-06-2025;Alp Taxi GmbH;7000476;666300;4591;Transaction on card **** 5893;3394;;;-18;EUR
+13-06-2025;DB Vertrieb GmbH;;;4595;Transaction on card **** 6280;;;;-113.98;EUR
+13-06-2025;UBER   *TRIP;;;4594;Transaction on card **** 6280;;;;-13.66;EUR
+13-06-2025;UBER   *TRIP;;;4593;Transaction on card **** 6280;;;;-6.98;EUR
+16-06-2025;Staking Rewards;7000322;590002;4596;Transaction on card **** 5893;82856795-0028;;;-119;EUR
+16-06-2025;Cloudflare Inc.;7000225;590002;4599;Transaction on card **** 1865;IN-41873916;;;-23.5;EUR
+16-06-2025;Adobe;7000265;683700;4600;Transaction on card **** 6466;IEE2025007650975;;;-29.99;EUR
+16-06-2025;Tiingo;7000187;590002;4601;Transaction on card **** 6060;24230;;;-783.43;EUR
+16-06-2025;Blocksize Capital GmbH;7000093;590002;4602;Transaction on card **** 6060;05A07D45-1522;;;-653.31;EUR
+16-06-2025;Cherry Servers Uab;7000098;590001;4603;Transaction on card **** 1865;06/2025/01494;;;-267;EUR
+16-06-2025;TRISOR* SCHLIESSFACHMI;;;4604;Transaction on card **** 6060;;;;-72;EUR
+17-06-2025;Envato Elements Pty Ltd;7000513;683700;4598;Transaction on card **** 6466;18108479;;;-29;EUR
+17-06-2025;Shell 2200;;;4609;Transaction on card **** 6280;;;;-71.25;EUR
+18-06-2025;FREENOW* CF3BBQ-2;;;4614;Transaction on card **** 6280;;;;-17.5;EUR
+18-06-2025;OPSGENIE;;;4618;Transaction on card **** 6060;;;;-188.64;EUR
+18-06-2025;Vienna House Easy by W;;;4624;Transaction on card **** 6280;;;;-169;EUR
+18-06-2025;UBER   *TRIP;;;4620;Transaction on card **** 6280;;;;-8.61;EUR
+18-06-2025;UBER   *TRIP;;;4615;Transaction on card **** 6280;;;;-13.94;EUR
+18-06-2025;Viet Bowl;;;4617;Transaction on card **** 6280;;;;-77;EUR
+19-06-2025;Turkish Airline;7000215;666300;4619;Transaction on card **** 6466;2352257607090;;;-290.08;EUR
+19-06-2025;Slack;7000176;683700;4630;Transaction on card **** 1865;SBIE-8888316;;;-3531.95;EUR
+19-06-2025;Deutsche Lufthansa AG;7000092;;4610;Transaction on card **** 6280;;;;-465.54;EUR
+19-06-2025;UBER   *TRIP;;;4629;Transaction on card **** 6280;;;;-14.88;EUR
+19-06-2025;UBER   *TRIP;;;4623;Transaction on card **** 6280;;;;-7.8;EUR
+20-06-2025;FS.COM GmbH;7005200;649500;4637;Transaction on card **** 6380;IN042506200695;;;-806.82;EUR
+20-06-2025;Amazon;7000012;649500;4636;Transaction on card **** 6380;DE5231V8HAEUI;;;-16.33;EUR
+20-06-2025;Amazon;7000012;649500;4638;Transaction on card **** 6380;DE5007EAXTQDDI;;;-183.94;EUR
+20-06-2025;Github;7000110;590002;4639;Transaction on card **** 9360;INV88312024;;;-38.35;EUR
+20-06-2025;;;;;Deposit to finway wallet;;20000;EUR;;
+23-06-2025;Twelvedata;7000155;590002;4641;Transaction on card **** 9360;4B972EC8-0027;;;-86.5;EUR
+23-06-2025;Bitfly;7000314;590002;4642;Transaction on card **** 0511;INV-9347;;;-49.99;EUR
+23-06-2025;My Place;7000191;631000;4643;Transaction on card **** 6060;808-18632;;;-261.63;EUR
+24-06-2025;Join Solutions AG;7000554;683700;4646;Transaction on card **** 1323;4BGGIVME-0002;;;-90;EUR
+24-06-2025;Microsoft;7000226;683700;4648;Transaction on card **** 1865;E0300WTI6T;;;-77.6;EUR
+24-06-2025;TRISOR* SCHLIESSFACHMI;;;4649;Transaction on card **** 6060;;;;-72;EUR
+24-06-2025;Shell;7000304;653000;4647;Transaction on card **** 4163;192865;;;-74.53;EUR
+25-06-2025;Tiingo;7000187;590002;4650;Transaction on card **** 6060;24241;;;-174.66;EUR
+25-06-2025;Edeka;7000070;664300;4652;Transaction on card **** 5893;6500;;;-14.66;EUR
+25-06-2025;Turkish Airline;7000215;666300;4657;Merchant refund to card **** 6466;2352257607090;200.08;EUR;;
+26-06-2025;FREENOW* CGDVM4-2;;;4654;Transaction on card **** 6280;;;;-45;EUR
+27-06-2025;Webflow;7000186;663000;4671;Transaction on card **** 6466;in_0ReCKbo2ZNzxqgUAhLLXCxHi;;;-42.28;EUR
+27-06-2025;Webflow;7000186;663000;4672;Transaction on card **** 6466;in_0ReCtSo2ZNzxqgUASs5HzQ0v;;;-113.9;EUR
+27-06-2025;Kaufland Marketplace;;;4673;Transaction on card **** 6380;;;;-191.72;EUR
+27-06-2025;EOD;7000185;590002;4674;Transaction on card **** 6060;0437F3EF-0026;;;-199;EUR
+27-06-2025;Media Markt;7000233;649500;4660;Transaction on card **** 6380;M103-41008-4999-0-26062025;;;-13.99;EUR
+27-06-2025;www.hotel-gio.de;;;4669;Transaction on card **** 1323;;;;-116.9;EUR
+27-06-2025;Yukiko Asian Fine Dining;7000568;664000;4670;Transaction on card **** 8172;5-439;;;-55;EUR
+27-06-2025;Steghouse;7000241;;4659;Transaction on card **** 6280;;;;-84;EUR
+30-06-2025;LEONARDO HOTEL MUNCHEN;;;4668;Transaction on card **** 1323;;;;-225.9;EUR
+30-06-2025;Loom;7000094;683700;4679;Transaction on card **** 6060;503B4B68-0029;;;-43.04;EUR
+30-06-2025;Tagesbar Inselblick;7000494;664000;4676;Transaction on card **** 8172;453019;;;-104;EUR
+30-06-2025;Verifone Payments BV dba 2Checkout;7000582;683700;4677;Transaction on card **** 6380;BV94182800;;;-150;EUR
+30-06-2025;DB Vertrieb GmbH;;;4678;Transaction on card **** 6280;;;;-14.3;EUR
+30-06-2025;SumUp  *A.Yarzada;;;4680;Transaction on card **** 6280;;;;-45;EUR
+30-06-2025;OPENAI *CHATGPT SUBSCR;;;4681;Transaction on card **** 9360;;;;-590.8;EUR
