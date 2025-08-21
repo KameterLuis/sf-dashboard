@@ -24,6 +24,9 @@ function parseGermanDate(dateStr: string): Date {
 }
 
 async function saveCsvToDatabase(records: any[]) {
+
+  console.log(records);
+
   const transactions = records
     .map((r) => {
       const timestamp = parseGermanDate(r.TransactionDate || "");
@@ -42,8 +45,45 @@ async function saveCsvToDatabase(records: any[]) {
       };
     });
 
+  const previousBalance = await prisma.fwBalance.findMany({
+    orderBy: { timestamp: 'desc' },
+  });
+
+  const latest = previousBalance[0];
+
+  console.log(latest);
+
+  const previousBalanceNum = latest ? Number(latest.amount.toFixed(2)) : 0;
+
+  let prev = previousBalanceNum;
+
+  const balances = transactions.map((t, i) => {
+
+    if(!prev) {
+      prev = 30_646.65;
+    }
+
+    console.log(prev);
+    console.log(Number(t.amount));
+
+    let amount = prev + Number(t.amount);
+
+    prev = amount;
+
+    return {
+        timestamp: t.timestamp,
+        amount: Decimal(amount),
+        fiatType: FiatType.DOLLAR,
+        hash: generateTransactionHash({ timestamp: t.timestamp, amount: Number(t.amount), unique: t.hash }),
+      };
+  });
+
   await prisma.fwTransaction.createMany({
     data: transactions,
+    skipDuplicates: true,
+  });
+  await prisma.fwBalance.createMany({
+    data: balances,
     skipDuplicates: true,
   });
 }

@@ -49,7 +49,6 @@ export const POST = async (req: Request) => {
         process.cwd(),
         `uploads/${currentYear}/monthly/${monthString}/${type}`
       );
-      console.log(dir);
     } else {
       dir = path.join(
         process.cwd(),

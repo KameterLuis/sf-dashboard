@@ -11,10 +11,10 @@ DATEV
 ## Updating Database Structure
 
 1. Update schema.prisma
-2. Run npx prisma generate
+2. npx prisma generate
 3. npx prisma migrate reset --skip-seed
 4. npx prisma reset
-5. Run npx prisma migrate dev --name some_name
+5. npx prisma migrate dev --name some_name
 6. npx prisma migrate deploy
 7. npx prisma db seed
 

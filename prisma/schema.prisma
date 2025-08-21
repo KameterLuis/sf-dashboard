@@ -52,11 +52,17 @@ enum TresTransactionType {
   OTHER
 }
 
+enum AccountType {
+  REGULAR
+  FOREIGN
+}
+
 model DatevTransaction {
   id        Int                  @id @default(autoincrement())
   timestamp DateTime
   amount    Decimal
   type      DatevTransactionType
+  hash      String               @unique
   fiatType  FiatType
 }
 
@@ -64,6 +70,7 @@ model FwBalance {
   id        Int      @id @default(autoincrement())
   timestamp DateTime
   amount    Decimal
+  hash      String   @unique
   fiatType  FiatType
 }
 
@@ -71,23 +78,26 @@ model FwTransaction {
   id        Int      @id @default(autoincrement())
   timestamp DateTime
   amount    Decimal
+  hash      String   @unique
   fiatType  FiatType
 }
 
 model AccountBalance {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime
-  amount    Decimal
-  fiatType  FiatType
-  hash      String   @unique
+  id          Int         @id @default(autoincrement())
+  timestamp   DateTime
+  amount      Decimal
+  fiatType    FiatType
+  hash        String      @unique
+  accountType AccountType
 }
 
 model AccountTransaction {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime
-  amount    Decimal
-  fiatType  FiatType
-  hash      String   @unique
+  id          Int         @id @default(autoincrement())
+  timestamp   DateTime
+  amount      Decimal
+  fiatType    FiatType
+  hash        String      @unique
+  accountType AccountType
 }
 
 model TresTransaction {
@@ -97,6 +107,7 @@ model TresTransaction {
   fiatAmount  Decimal
   network     Network
   ticker      Ticker
+  hash        String              @unique
   type        TresTransactionType
 }
 
@@ -106,5 +117,6 @@ model TresBalance {
   tokenBalance Decimal
   fiatBalance  Decimal
   ticker       Ticker
+  hash         String   @unique
   network      Network
 }

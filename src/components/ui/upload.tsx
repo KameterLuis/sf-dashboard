@@ -78,12 +78,13 @@ export default function Upload({
 
   return (
     <Card
-      className={`duration-300 ${
+      className={`duration-300 border-dashed ${
         isMissing
-          ? cardOpen
-            ? "cursor-pointer h-[430px]"
-            : "overflow-hidden h-[90px] cursor-pointer"
-          : "border-[#1dc320] overflow-hidden h-[90px]"
+          ? "hover:shadow-lg " +
+            (cardOpen
+              ? "cursor-pointer h-[430px]"
+              : "overflow-hidden h-[90px] cursor-pointer")
+          : "border-[#1dc320] overflow-hidden h-[90px] border-solid"
       }`}
       onClick={() => setCardOpen(!cardOpen)}
     >

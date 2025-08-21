@@ -1,11 +1,11 @@
 import { getWeekNumber } from "@/lib/date-helper";
 import { ensureFolders } from "@/lib/ensure-folders";
-import { writeFile } from "fs/promises";
-import { parse } from "csv-parse/sync";
-import path from "path";
-import { FiatType, PrismaClient } from "@prisma/client";
+import { AccountType, FiatType, PrismaClient } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import crypto from "crypto";
+import { parse } from "csv-parse/sync";
+import { writeFile } from "fs/promises";
+import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -30,26 +30,41 @@ async function saveCsvToDatabase(records: any[]) {
     .filter((r) => r.Betrag) // skip rows without amount
     .map((r) => {
       const timestamp = parseGermanDate(r.Buchungstag || r.Valutadatum || "");
-      const amount = new Decimal(r.Betrag.replace(",", ".")); // convert "123,45" → 123.45
-      const saldo = r["Saldo nach Buchung"]
-        ? new Decimal(r["Saldo nach Buchung"].replace(",", "."))
+      const amountNum = r.Betrag.replace(",", ".");
+      const amount = new Decimal(amountNum); // convert "123,45" → 123.45
+      const saldoNum = r["Saldo nach Buchung"]
+        ? r["Saldo nach Buchung"].replace(",", ".")
         : amount;
 
       return {
         timestamp: timestamp,
         amount: amount, // convert "123,45" → 123.45
         fiatType: FiatType.EURO,
-        hash: generateTransactionHash({ timestamp, amount, saldo }),
+        accountType: AccountType.REGULAR,
+        hash: generateTransactionHash({ timestamp, amount: amountNum, saldo: saldoNum }),
       };
     });
 
   const balances = records
     .filter((r) => r["Saldo nach Buchung"])
-    .map((r) => ({
-      timestamp: parseGermanDate(r.Buchungstag || r.Valutadatum || ""),
-      amount: new Decimal(r["Saldo nach Buchung"].replace(",", ".")),
-      fiatType: FiatType.EURO,
-    }));
+    .map((r) => {
+
+      const timestamp = parseGermanDate(r.Buchungstag || r.Valutadatum || "");
+      const amountNum = r.Betrag.replace(",", ".");
+      const amount = new Decimal(amountNum); // convert "123,45" → 123.45
+      const saldoNum = r["Saldo nach Buchung"]
+        ? r["Saldo nach Buchung"].replace(",", ".")
+        : amount;
+      const saldo = new Decimal(saldoNum);
+
+      return {
+        timestamp: timestamp,
+        amount: saldo,
+        fiatType: FiatType.EURO,
+        accountType: AccountType.REGULAR,
+        hash: generateTransactionHash({ timestamp, amount: amountNum, saldo: saldoNum }),
+      };
+    });
 
   // bulk insert
   await prisma.accountTransaction.createMany({
