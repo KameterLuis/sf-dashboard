@@ -1,5 +1,20 @@
-import { PrismaClient } from "@prisma/client";
+import { AccountType, FiatType, PrismaClient } from "@prisma/client";
+import { kontoTable } from "../src/lib/lookup";
 const prisma = new PrismaClient();
+
+const assetSymbols = [
+  "SOL",
+  "USDC",
+  "ETH",
+  "LDO",
+  "USDT",
+  "APT",
+  "MNDE",
+  "LINK",
+  "TIA",
+  "W",
+  "STRD",
+];
 
 const addDays = (d, days) => {
   const x = new Date(d);
@@ -32,67 +47,44 @@ async function main() {
 
   let fwBalance = 5000;
   let accountBalance = 7500;
+  let fAccountBalance = 2000;
 
-  const networks = [
-    "solana",
-    "ethereum",
-    "chainlink",
-    "celestia",
-    "lido",
-    "aptos",
-    "sui",
-  ];
-  const tickers = ["SOL", "ETH", "LINK", "TIA", "LIDO", "APT", "SUI"];
   const tokenUsd = 30000;
   const startToken = 5;
 
   for (let i = 0; i <= days; i++) {
     const day = addDays(startDate, i);
 
-    // Datev-like
-    await prisma.datevTransaction.create({
-      data: {
-        timestamp: day,
-        amount: 1000 + i * 15 * (Math.random() - 0.25),
-        type: "REVENUE",
-        fiatType: "EURO",
-      },
-    });
-    await prisma.datevTransaction.create({
-      data: {
-        timestamp: day,
-        amount: -200 - (i % 5) * 10 * (Math.random() + 0.5),
-        type: "COGS",
-        fiatType: "EURO",
-      },
-    });
-    await prisma.datevTransaction.create({
-      data: {
-        timestamp: day,
-        amount: 1000 + i * 10 * (Math.random() + 0.5),
-        type: "OTHER_OPERATING_INCOME",
-        fiatType: "EURO",
-      },
-    });
-    await prisma.datevTransaction.create({
-      data: {
-        timestamp: day,
-        amount: (i % 50) * Math.random() * 100,
-        type: "OTHER",
-        fiatType: "EURO",
-      },
-    });
+    if (i % 29 == 0) {
+      for (let j = 0; j < kontoTable; j++) {
+        // Datev-like
+        await prisma.datevTransaction.create({
+          data: {
+            timestamp: day,
+            amount: 1000 + i * 15 * (Math.random() - 0.25),
+            type: kontoTable[j],
+            hash: String(Math.random()),
+          },
+        });
+      }
+    }
 
     // FW
     fwBalance += Math.random() * 200 - 50;
     await prisma.fwBalance.create({
-      data: { timestamp: day, amount: fwBalance, fiatType: "EURO" },
+      data: {
+        timestamp: day,
+        amount: fwBalance,
+        fiatType: FiatType.DOLLAR,
+        hash: Math.random(),
+      },
     });
     await prisma.fwTransaction.create({
       data: {
         timestamp: day,
         amount: Math.random() * 400 - 100,
-        fiatType: "EURO",
+        fiatType: FiatType.DOLLAR,
+        hash: Math.random(),
       },
     });
 
@@ -100,17 +92,48 @@ async function main() {
     const accountTx = Math.random() * 5000 - 250;
     accountBalance += accountTx;
     await prisma.accountBalance.create({
-      data: { timestamp: day, amount: accountBalance, fiatType: "EURO" },
+      data: {
+        timestamp: day,
+        amount: accountBalance,
+        fiatType: FiatType.EURO,
+        accountType: AccountType.REGULAR,
+        hash: Math.random(),
+      },
     });
     await prisma.accountTransaction.create({
-      data: { timestamp: day, amount: accountTx, fiatType: "EURO" },
+      data: {
+        timestamp: day,
+        amount: accountTx,
+        fiatType: FiatType.EURO,
+        accountType: AccountType.REGULAR,
+        hash: Math.random(),
+      },
+    });
+
+    // Foreign Account
+    const fAccountTx = Math.random() * 5000 - 250;
+    fAccountBalance += fAccountTx;
+    await prisma.accountBalance.create({
+      data: {
+        timestamp: day,
+        amount: fAccountBalance,
+        fiatType: FiatType.DOLLAR,
+        accountType: AccountType.FOREIGN,
+        hash: Math.random(),
+      },
+    });
+    await prisma.accountTransaction.create({
+      data: {
+        timestamp: day,
+        amount: fAccountTx,
+        fiatType: FiatType.DOLLAR,
+        accountType: AccountType.FOREIGN,
+        hash: Math.random(),
+      },
     });
 
     // Tres across networks
     for (let j = 0; j < networks.length; j++) {
-      const network = networks[j];
-      const ticker = tickers[j];
-
       const tokenChange = Math.random() * 0.5 - 0.25;
       const tokenBalance = startToken + tokenChange + i * 0.02;
       const fiatChange = tokenChange * tokenUsd;
@@ -121,34 +144,21 @@ async function main() {
           timestamp: day,
           tokenAmount: tokenChange,
           fiatAmount: fiatChange,
-          network,
-          ticker,
-          type: "OPERATIONS",
-        },
-      });
-      await prisma.tresTransaction.create({
-        data: {
-          timestamp: day,
-          tokenAmount: Math.random() * 0.02,
-          fiatAmount: Math.random() * 0.02 * tokenUsd,
-          network,
-          ticker,
-          type: "FEES",
-        },
-      });
-      await prisma.tresTransaction.create({
-        data: {
-          timestamp: day,
-          tokenAmount: Math.random() * 0.01,
-          fiatAmount: Math.random() * 0.01 * tokenUsd,
-          network,
-          ticker,
-          type: "OTHER",
+          project,
+          subcategory,
+          transactiontype,
+          hash: String(Math.random()),
         },
       });
 
       await prisma.tresBalance.create({
-        data: { timestamp: day, tokenBalance, fiatBalance, network, ticker },
+        data: {
+          timestamp: day,
+          tokenBalance,
+          fiatBalance,
+          assetSymbol,
+          hash: String(Math.random()),
+        },
       });
     }
   }

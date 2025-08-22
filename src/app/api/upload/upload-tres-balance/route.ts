@@ -1,75 +1,83 @@
 import { getWeekNumber } from "@/lib/date-helper";
 import { ensureFolders } from "@/lib/ensure-folders";
-import { AccountType, FiatType, PrismaClient } from "@prisma/client";
+import { lookupTable } from "@/lib/lookup";
+import {
+  AccountType,
+  AssetSymbol,
+  FiatType,
+  PrismaClient,
+} from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import crypto from "crypto";
 import { writeFile } from "fs/promises";
 import path from "path";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
 const prisma = new PrismaClient();
 
 function generateTransactionHash(transaction: {
   timestamp: Date;
   amount: string | number;
-  saldo: string | number;
+  fiatBalance: string | number;
 }) {
   const str = `${transaction.timestamp.toISOString()}|${transaction.amount}|${
-    transaction.saldo
+    transaction.fiatBalance
   }`;
   return crypto.createHash("sha256").update(str).digest("hex");
 }
 
 function parseGermanDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split(".");
+  const [year, month, day] = dateStr.split(" ")[0].split("-");
   return new Date(Number(year), Number(month) - 1, Number(day));
 }
 
 async function saveXLSXToDatabase(records: any[]) {
-  const transactions = records
+  const balances = records
+    .filter((r) =>
+      Object.values(AssetSymbol).includes(
+        r["Asset Class Symbol"] as AssetSymbol
+      )
+    )
+    .filter((r) => {
+      if ("Balance State" in r) {
+        return r["Balance State"] != "delegated_to_account";
+      }
+      return false;
+    })
     .map((r) => {
       const timestamp = parseGermanDate(r.Timestamp || "");
-      const amountNum = r.Betrag.replace(",", ".");
-      const amount = new Decimal(amountNum); // convert "123,45" → 123.45
-      const saldoNum = r["Saldo nach Buchung"]
-        ? r["Saldo nach Buchung"].replace(",", ".")
-        : amount;
+
+      let amount;
+
+      if (r["Historical Balance (T)"]) {
+        amount = r["Historical Balance (T)"];
+      } else {
+        amount = r["Running Balance (T)"];
+      }
+
+      const assetSymbol = r["Asset Class Symbol"];
+
+      let fiatAmount;
+
+      if (r["Historical Balance Fiat Value ($)"]) {
+        fiatAmount = r["Historical Balance Fiat Value ($)"];
+      } else {
+        fiatAmount = r["Running Balance Fiat Value ($)"];
+      }
 
       return {
         timestamp: timestamp,
-        amount: amount, 
-        fiatType: FiatType.DOLLAR,
-        accountType: AccountType.FOREIGN,
-        hash: generateTransactionHash({ timestamp, amount: amountNum, saldo: saldoNum }),
+        tokenBalance: amount,
+        fiatBalance: fiatAmount,
+        assetSymbol: assetSymbol,
+        hash: generateTransactionHash({
+          timestamp,
+          amount: amount,
+          fiatBalance: fiatAmount,
+        }),
       };
     });
 
-  const balances = records
-    .filter((r) => r["Saldo nach Buchung"])
-    .map((r) => {
-
-      const timestamp = parseGermanDate(r.Buchungstag || r.Valutadatum || "");
-      const amountNum = r.Betrag.replace(",", ".");
-      const amount = new Decimal(amountNum); // convert "123,45" → 123.45
-      const saldoNum = r["Saldo nach Buchung"]
-        ? r["Saldo nach Buchung"].replace(",", ".")
-        : amount;
-      const saldo = new Decimal(saldoNum);
-
-      return {
-        timestamp: timestamp,
-        amount: saldo,
-        fiatType: FiatType.DOLLAR,
-        accountType: AccountType.FOREIGN,
-        hash: generateTransactionHash({ timestamp, amount: amountNum, saldo: saldoNum }),
-      };
-    });
-
-  // bulk insert
-  await prisma.tresTransaction.createMany({
-    data: transactions,
-    skipDuplicates: true,
-  });
   await prisma.tresBalance.createMany({
     data: balances,
     skipDuplicates: true,
@@ -113,8 +121,6 @@ export const POST = async (req: Request) => {
     const records = XLSX.utils.sheet_to_json(sheet, {
       defval: "",
     });
-
-    console.log(records);
 
     await saveXLSXToDatabase(records);
 
